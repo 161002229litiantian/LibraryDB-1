@@ -1,13 +1,14 @@
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-
 import Bean.BorrowBook;
 import Bean.KS;
 import Bean.UserInfo;
 import Bean.borrow;
 import Bean.collect;
+import Bean.comment;
 import Bean.kindbook;
 import Bean.specificbook;
 import Bean.user;
@@ -26,16 +27,16 @@ public class test {
 		Scanner sc=new Scanner(System.in);
 		boolean b=true;
 		while(b) {
-			System.out.println("请选择你的登陆方式：");
+			System.out.println("请选择你的登陆方式:");
 			System.out.println("\t1.用户ID登录");
 			System.out.println("\t2.email登录");
 			System.out.println("\t3.退出");
 			int temp=Integer.parseInt(sc.nextLine());
 			switch(temp) {
 				case 1:{
-					System.out.println("请输入你的用户ID：");
+					System.out.println("请输入你的用户ID:");
 					String userid=sc.nextLine();
-					System.out.println("请输入你的密码：");
+					System.out.println("请输入你的密码:");
 					String pwd=sc.nextLine();
 					user u=DAOFactory.getUserDAO().getUserByID(userid, pwd);
 					if(u==null) {
@@ -55,9 +56,9 @@ public class test {
 					break;
 				}
 				case 2:{
-					System.out.println("请输入你的email：");
+					System.out.println("请输入你的email:");
 					String email=sc.nextLine();
-					System.out.println("请输入你的密码：");
+					System.out.println("请输入你的密码:");
 					String pwd=sc.nextLine();
 					user u=DAOFactory.getUserDAO().getUserByEM(email, pwd);
 					user0(u);	//只有普通用户有邮箱登陆相关操作,管理员没有邮箱
@@ -75,7 +76,7 @@ public class test {
 		Scanner sc=new Scanner(System.in);
 		boolean b=true;
 		while(b) {
-			System.out.println("请选择以下功能编号");
+			System.out.println("请输入以下功能编号:");
 			System.out.println("\t1.完善借阅书籍的详细信息");
 			System.out.println("\t2.完善借阅位置相关信息");
 			System.out.println("\t3.退出");
@@ -95,7 +96,7 @@ public class test {
 				}
 			}
 		}	
-		sc.close();
+		//sc.close();
 	}
 	protected static void adminUpdateDetail() {//更新书籍详细信息
 		//先输出所有的书籍信息
@@ -135,7 +136,7 @@ public class test {
 			int temp=Integer.parseInt(sc.nextLine());
 			String s=null;
 			if(temp!=8) {
-				System.out.println("要修改成：");
+				System.out.println("要修改成:");
 				s=sc.nextLine();
 			}
 			switch(temp) {
@@ -174,7 +175,7 @@ public class test {
 			}
 			DAOFactory.getKindBookDAO().updateInfo(k0);
 		}
-		sc.close();
+		//sc.close();
 	}
 	protected static void adminUpdateLocation() {//完善借阅位置的相关信息
 		//先输出所有的书籍位置信息
@@ -203,7 +204,7 @@ public class test {
 		Scanner sc=new Scanner(System.in);
 		boolean b=true;
 		while(b) {
-			System.out.println("请选择以下功能编号");
+			System.out.println("请选择以下功能编号:");
 			System.out.println("\t1.查询图书");
 			System.out.println("\t2.查看当前借阅");
 			System.out.println("\t3.查看借阅历史");
@@ -238,57 +239,23 @@ public class test {
 				}
 			}
 		}
-		sc.close();
 	}
 	protected static void userSearchBook(String userid) {
 		Scanner sc=new Scanner(System.in);
-		System.out.print("请输入你要查询的图书书名：");
+		System.out.print("请输入你要查询的图书书名:");
 		String name=sc.nextLine();
 		List<KS> k=DAOFactory.getSpecificBookDAO().search(name);
+		if(k.size()==0) {
+			System.out.println("没有查找到相关书名图书");
+		}
 		System.out.println("一共找到了"+k.size()+"本书");
 		for(int i=0;i<k.size();i++) {
 			KS k0=k.get(i);
-			System.out.println("索书号:"+k0.getBarcode());
-			System.out.println("书名:"+k0.getBookname());
-			System.out.println("作者:"+k0.getAuthor());
-			System.out.println("章节:"+k0.getCatalog());
-			System.out.println("内容:"+k0.getContent());
-			System.out.println("出版社:"+k0.getPublish());
-			System.out.println("存放地:"+k0.getPlace());
-			System.out.println("状态:"+k0.getState());
-			boolean b=true;
-			while(b) {
-				System.out.println("请选择以下功能：");
-				System.out.println("\t1.借阅该书刊");
-				System.out.println("\t2.加入暂存书架");
-				System.out.println("\t3.查看下一本书");
-				System.out.println("\t4.返回上级选择");
-				int temp=Integer.parseInt(sc.nextLine());
-				switch(temp) {
-					case 1:{
-						if(k0.getState().equals("已借")) {
-							System.out.println("不可借阅");
-						}
-						else { //可借阅
-							borrowBook(userid,k0.getBarcode());
-						}
-						break;
-					}
-					case 2:{
-						collectBook(userid,k0.getBarcode());
-						break;
-					}
-					case 3:{
-						b=false;
-						break;
-					}
-					case 4:{
-						return;
-					}
-				}
-			}
+			System.out.println("索书号:"+k0.getCallnumber()+"  "+"条形码:"+k0.getBarcode()+"  "+"书名:"+k0.getBookname()+"  "+"作者:"+k0.getAuthor()+"  "+"章节:"+k0.getCatalog()+"  "+"内容:"+k0.getContent()+"  "+"出版社:"+k0.getPublish()+"  "+"存放地:"+k0.getPlace()+"  "+"状态:"+k0.getState());
 		}
-		sc.close();		
+		printl(userid);
+		
+		//sc.close();		
 	}
 	private static void collectBook(String userid, String barcode) {
 		collect c=new collect();
@@ -312,6 +279,7 @@ public class test {
 		Calendar calendar=Calendar.getInstance();
 		Date borrowdate=calendar.getTime();
 		b.setBorrowdate(borrowdate);
+		b.setStatus("已借");
 		boolean temp=DAOFactory.getUserDetailDAO().checkMaxBorrow(userid);
 		if(temp==true) {
 			boolean t1=DAOFactory.getBorrowDAO().insert(b);
@@ -340,7 +308,7 @@ public class test {
 			Scanner sc=new Scanner(System.in);
 			boolean b=true;
 			while(b) {
-				System.out.println("请选择以下功能:");
+				System.out.println("请输入以下功能编号:");
 				System.out.println("\t1.借阅该书刊");
 				System.out.println("\t2.将该书刊移除暂藏书架");
 				System.out.println("\t3.返回上级选择");
@@ -363,18 +331,22 @@ public class test {
 						break;
 					}
 					case 3:{
-						return;
+						b=false;
+						break;
 					}
 				}
 			}
-			sc.close();
+			//sc.close();
 		}
 		
 	}
 	private static void userInformation(String userid) {
 		UserInfo user=DAOFactory.getUserDAO().queryUser(userid);
-		System.out.println("用户ID:"+user.getUserid());
-		System.out.println("邮箱:"+user.getEmail());
+		user u=DAOFactory.getUserDAO().search(userid);
+	   //System.out.println(u.getEmail());
+	    System.out.println(u.getUserid());
+		System.out.println("用户ID:"+u.getUserid());
+		System.out.println("邮箱:"+u.getEmail());
 		System.out.println("姓名:"+user.getName());
 		System.out.println("已借书量:"+user.getBorrowcount());
 		System.out.println("最大借书量:"+user.getMaxborrow());
@@ -382,7 +354,7 @@ public class test {
 		Scanner sc=new Scanner(System.in);
 		boolean b=true;
 		while(b) {
-			System.out.println("请选择以下功能:");
+			System.out.println("请输入以下功能编号:");
 			System.out.println("\t1.添加|修改邮箱");
 			System.out.println("\t2.返回上级选择");
 			int temp=Integer.parseInt(sc.nextLine());
@@ -399,7 +371,7 @@ public class test {
 				}
 			}
 		}
-		sc.close();
+		//sc.close();
 	}
 	private static void userHistoryBorrow(String userid) {
 		List<BorrowBook> books=DAOFactory.getBorrowDAO().searchHistory(userid);
@@ -431,7 +403,7 @@ public class test {
 					}
 				}
 			}
-			sc.close();
+			//sc.close();
 		}
 	}
 	private static void userCurrentBorrow(String userid) {
@@ -474,7 +446,81 @@ public class test {
 					}
 				}
 			}
-			sc.close();
+			//sc.close();
+		}
+	}
+	
+	private static boolean addCommt(String userid,String callnumber){
+		Scanner sc=new Scanner(System.in);
+		System.out.println("请输入您的评价:");
+		String comment=sc.nextLine();
+		boolean t=DAOFactory.getCommentDAO().addComment(userid, callnumber, comment);
+		return t;
+	}
+	
+	private static void searchCommt(String callnumber) {
+		List<comment> cList=null;
+		cList=DAOFactory.getCommentDAO().searchComment(callnumber);
+		if(cList.size()==0)
+			System.out.println("暂时没有评论信息");
+		for(int i=0;i<cList.size();i++) {
+			comment c=cList.get(i);
+			System.out.println(c.getUserid()+":"+c.getComment()+"\t"+c.getTime());
+		}
+	}
+	
+	private static void printl(String userid) {
+		Scanner sc=new Scanner(System.in);
+		System.out.println("请输入您想操作书本的条形码:");
+		String ssh=sc.nextLine();
+		List<specificbook> kk=DAOFactory.getSpecificBookDAO().lookup(ssh);
+		if(kk.size()==0) {
+			System.out.println("条形码输入错误");
+			return;
+		}	
+		else {
+			boolean b=true;
+			while(b) {
+				
+				specificbook k0=DAOFactory.getSpecificBookDAO().lookup(ssh).get(0);
+				System.out.println("请选择以下功能:");
+				System.out.println("\t1.借阅该书刊");
+				System.out.println("\t2.加入暂存书架");
+				System.out.println("\t3.评价");
+				System.out.println("\t4.查看评论");
+				System.out.println("\t5.返回上级选择");
+				int temp=Integer.parseInt(sc.nextLine());
+				switch(temp) {
+					case 1:{
+						if(k0.getState().equals("已借")) {
+							System.out.println("不可借阅");
+						}
+						else { //可借阅
+							borrowBook(userid,k0.getBarcode());
+						}
+						break;
+					}
+					case 2:{
+						collectBook(userid,k0.getBarcode());
+						break;
+					}
+					case 3:{
+						if(addCommt(userid,k0.getCallnumber())) {
+							System.out.println("评价成功");
+						}
+						break;
+					}
+					case 4:{
+						searchCommt(k0.getCallnumber());
+						break;
+					}
+					case 5:{
+						return;
+					}
+				}
+			}
+			
+
 		}
 	}
 }

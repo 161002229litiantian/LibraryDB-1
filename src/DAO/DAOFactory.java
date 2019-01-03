@@ -34,4 +34,8 @@ public class DAOFactory {
 		UserDetailDAO uDDao=new UDDAOConcrete();
 		return uDDao;
 	}
+	public static CommentDAO getCommentDAO() {
+		CommentDAO uDDao=new CMDAOConcrete();
+		return uDDao;
+	}
 }
